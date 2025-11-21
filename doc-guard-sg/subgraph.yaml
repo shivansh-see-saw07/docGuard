@@ -1,0 +1,32 @@
+specVersion: 0.0.5
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: DocumentVerification
+    network: arbitrum-sepolia
+    source:
+      address: "0x3A632ee2c3F3B8BaFb85acD06427a2E3728d7F69"
+      abi: DocumentVerification
+      startBlock: 171217168
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Organization
+        - Document
+        - Verification
+      abis:
+        - name: DocumentVerification
+          file: abis/DocumentVerification.json
+      eventHandlers:
+        - event: OrganizationRegistered(indexed bytes32,string,address,uint256)
+          handler: handleOrganizationRegistered
+        - event: DocumentRegistered(indexed bytes32,indexed bytes32,address,uint256,string)
+          handler: handleDocumentRegistered
+        - event: DocumentVerified(indexed bytes32,indexed bytes32,address,uint256)
+          handler: handleDocumentVerified
+        - event: DocumentDeleted(indexed bytes32,indexed bytes32,address,uint256)
+          handler: handleDocumentDeleted
+      file: src/mapping.ts
