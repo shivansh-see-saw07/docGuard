@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: ocr-service
+    env: python
+    buildCommand: |
+      # Install system dependencies for Tesseract OCR
+      apt-get update && apt-get install -y \
+        tesseract-ocr \
+        tesseract-ocr-eng \
+        tesseract-ocr-osd \
+        poppler-utils \
+        libgl1-mesa-glx \
+        libglib2.0-0 \
+        libsm6 \
+        libxext6 \
+        libxrender-dev \
+        libgomp1
+      # Verify Tesseract installation
+      tesseract --version
+      # Install Python dependencies
+      pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OCR_API_KEY
+        sync: false
+ 
