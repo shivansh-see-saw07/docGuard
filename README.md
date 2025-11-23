@@ -16,9 +16,11 @@ Document verification in today's world faces several critical challenges:
 
 DocGuard leverages blockchain technology to create a decentralized, transparent, and secure document verification system:
 
+- **Dual-Hash Verification**: Uses both SHA-256 (text hash) and p-hash (perceptual hash) for comprehensive tamper detection
 - **Blockchain Immutability**: Document hashes stored on-chain cannot be altered, ensuring permanent verification records
 - **Decentralized Trust**: No single authority controls the system - verification is trustless and transparent
 - **OCR Integration**: Automatic text extraction from documents (images/PDFs) for seamless processing
+- **Tamper Detection**: p-hash enables detection of visual manipulation even when text content appears unchanged
 - **Public Verification**: Anyone can verify documents against registered organizations without registration
 - **Cost-Effective**: Built on Arbitrum Sepolia L2 for low transaction costs
 - **Real-time Indexing**: Subgraph provides fast query access to blockchain data
@@ -50,11 +52,13 @@ DocGuard leverages blockchain technology to create a decentralized, transparent,
 2. Select a document file (image or PDF) - for demo purposes, you can use any document
 3. The system will:
    - Process the document through OCR service
-   - Extract text and generate a unique hash
-   - Display extracted information
+   - Extract text and generate SHA-256 hash (text hash) for content verification
+   - Generate p-hash (perceptual hash) to capture the document's visual fingerprint
+   - The p-hash is created by analyzing the visual features of the document image, making it robust against minor visual changes while sensitive to significant alterations
+   - Display extracted information and both hashes
 4. Click "Register Document"
 5. Confirm the transaction in your wallet
-6. The document hash is now permanently stored on the blockchain
+6. Both the text hash (SHA-256) and visual hash (p-hash) are now permanently stored on the blockchain
 
 ### Step 4: Verify a Document (User)
 
@@ -63,12 +67,16 @@ DocGuard leverages blockchain technology to create a decentralized, transparent,
 3. Select the organization to verify against
 4. Click "Verify Document"
 5. The system will:
-   - Generate the document hash
-   - Query the blockchain to check if it's registered
+   - Generate both SHA-256 hash (text hash) and p-hash (visual hash) of the uploaded document
+   - Query the blockchain to retrieve the stored hashes for comparison
+   - Compare text hashes for exact content match
+   - Calculate Hamming distance between the stored p-hash and uploaded document's p-hash to detect visual tampering
+   - Hamming distance measures the number of differing bits between hashes; a distance within the threshold indicates the document hasn't been visually tampered with
    - Display verification results instantly
 6. View the verification status:
-   - ✅ **Verified**: Document is registered and authentic
-   - ❌ **Not Verified**: Document is not found in the system
+   - ✅ **Verified**: Document text and visual content match the registered version (text hash matches AND Hamming distance is within acceptable threshold)
+   - ⚠️ **Tampered**: Document text matches but visual content shows significant alterations (text hash matches BUT Hamming distance exceeds threshold)
+   - ❌ **Not Verified**: Document is not found in the system or content has been altered
 
 ### Step 5: View Transaction History
 
@@ -149,6 +157,9 @@ DocGuard consists of four main components:
 
 - **Blockchain Security**: All data stored on Arbitrum Sepolia
 - **OCR Processing**: Automatic text extraction from images and PDFs
+- **Perceptual Hashing (p-hash)**: Detects visual changes and manipulations in documents
+- **Hamming Distance Analysis**: Measures similarity between document hashes to identify tampering
+- **Dual-Verification System**: Combines text hashing and visual hashing for maximum security
 - **Real-time Indexing**: Subgraph provides fast query access
 - **Responsive Design**: Works on desktop and mobile devices
 
